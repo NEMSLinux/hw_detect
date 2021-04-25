@@ -1,0 +1,20 @@
+#!/bin/bash
+# NEMS Linux Hardware Detection
+# By Robbie Ferguson // The Bald Nerd
+# (c) Copyright 2021 Category5 TV Network
+
+cmdline=$(cat /proc/cmdline)
+
+search="${cmdline##*bcm2709.boardrev=}"
+boardrev="${search%% *}"
+
+search="${cmdline##*bcm2709.serial=}"
+serial="${search%% *}"
+
+if [[ "$boardrev" = *"c03130" ]]; then
+  model="Raspberry Pi 400"
+  ram=$(free | awk '/^Mem:/{print $2}')
+fi
+
+echo $model
+echo $ram
