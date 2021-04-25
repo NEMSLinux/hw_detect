@@ -3,6 +3,11 @@
 # By Robbie Ferguson // The Bald Nerd
 # (c) Copyright 2021 Category5 TV Network
 
+# Find universal system info
+ram=$(free | awk '/^Mem:/{print $2}')
+
+# If available, grab the board revision from the kernel command line and cross-reference it against known board revisions
+model=""
 cmdline=$(cat /proc/cmdline)
 
 search="${cmdline##*bcm2709.boardrev=}"
@@ -52,7 +57,10 @@ elif [[ "$boardrev" = *"c03130" ]]; then
 
 fi
 
-ram=$(free | awk '/^Mem:/{print $2}')
+if [[ $model == "" ]]; then
+  echo "This board is unknown"
+  exit 1
+fi
 
 echo $model
 echo $ram
