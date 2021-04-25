@@ -7,7 +7,7 @@
 ram=$(free | awk '/^Mem:/{print $2}')
 
 # If available, grab the board revision from the kernel command line and cross-reference it against known board revisions
-model=""
+model_name=""
 cmdline=$(cat /proc/cmdline)
 
 search="${cmdline##*bcm2709.boardrev=}"
@@ -17,50 +17,64 @@ search="${cmdline##*bcm2709.serial=}"
 serial="${search%% *}"
 
 if [[ "$boardrev" = *"900021" ]]; then
-  model="Raspberry Pi A+"
+  model_name="Raspberry Pi 1 A+"
+  model_code=1
 
 elif [[ "$boardrev" = *"900032" ]]; then
-  model="Raspberry Pi B+"
+  model_name="Raspberry Pi 1 B+"
+  model_code=1
 
 elif [[ "$boardrev" = *"900092" ]] || [[ "$boardrev" = *"900093" ]] || [[ "$boardrev" = *"920092" ]] || [[ "$boardrev" = *"920093" ]]; then
-  model="Raspberry Pi Zero"
+  model_name="Raspberry Pi Zero"
+  model_code=1
 
 elif [[ "$boardrev" = *"9000c1" ]]; then
-  model="Raspberry Pi Zero W"
+  model_name="Raspberry Pi Zero W"
+  model_code=1
 
 elif [[ "$boardrev" = *"9020e0" ]]; then
-  model="Raspberry Pi 3A+"
+  model_name="Raspberry Pi 3A+"
+  model_code=5
 
 elif [[ "$boardrev" = *"900061" ]]; then
-  model="Raspberry Pi Compute Module"
+  model_name="Raspberry Pi Compute Module"
+  model_code=0
 
 elif [[ "$boardrev" = *"a01040" ]] || [[ "$boardrev" = *"a01041" ]] || [[ "$boardrev" = *"a02042" ]] || [[ "$boardrev" = *"a21041" ]] || [[ "$boardrev" = *"a22042" ]]; then
-  model="Raspberry Pi 2B"
+  model_name="Raspberry Pi 2B"
+  model_code=2
 
 elif [[ "$boardrev" = *"a02082" ]] || [[ "$boardrev" = *"a22082" ]] || [[ "$boardrev" = *"a32082" ]] || [[ "$boardrev" = *"a52082" ]] || [[ "$boardrev" = *"a22083" ]]; then
-  model="Raspberry Pi 3B"
+  model_name="Raspberry Pi 3B"
+  model_code=3
 
 elif [[ "$boardrev" = *"a020a0" ]] || [[ "$boardrev" = *"a220a0" ]]; then
-  model="Raspberry Pi Compute Module 3"
+  model_name="Raspberry Pi Compute Module 3"
+  model_code=0
 
 elif [[ "$boardrev" = *"a020d3" ]]; then
-  model="Raspberry Pi 3B+"
+  model_name="Raspberry Pi 3B+"
+  model_code=4
 
 elif [[ "$boardrev" = *"a02100" ]]; then
-  model="Raspberry Pi Compute Module 3+"
+  model_name="Raspberry Pi Compute Module 3+"
+  model_code=0
 
 elif [[ "$boardrev" = *"a03111" ]] || [[ "$boardrev" = *"b03111" ]] || [[ "$boardrev" = *"b03112" ]] || [[ "$boardrev" = *"b03114" ]] || [[ "$boardrev" = *"c03111" ]] || [[ "$boardrev" = *"c03112" ]] || [[ "$boardrev" = *"c03114" ]] || [[ "$boardrev" = *"d03114" ]]; then
-  model="Raspberry Pi 4B"
+  model_name="Raspberry Pi 4B"
+  model_code=6
 
 elif [[ "$boardrev" = *"c03130" ]]; then
-  model="Raspberry Pi 400"
+  model_name="Raspberry Pi 400"
+  model_code=7
 
 fi
 
-if [[ $model == "" ]]; then
+if [[ $model_name == "" ]]; then
   echo "This board is unknown"
   exit 1
 fi
 
-echo $model
+echo $model_name
 echo $ram
+echo $model_code
