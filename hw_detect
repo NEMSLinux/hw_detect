@@ -60,7 +60,7 @@ elif [[ "$boardrev" = *"a02100" ]]; then
   model_name="Raspberry Pi Compute Module 3+"
   model_code=0
 
-elif [[ "$boardrev" = *"a03111" ]] || [[ "$boardrev" = *"b03111" ]] || [[ "$boardrev" = *"b03112" ]] || [[ "$boardrev" = *"b03114" ]] || [[ "$boardrev" = *"c03111" ]] || [[ "$boardrev" = *"c03112" ]] || [[ "$boardrev" = *"c03114" ]] || [[ "$boardrev" = *"d03114" ]] || [[ "$boardrev" = *"d03115" ]]; then
+elif [[ "$boardrev" = *"a03111" ]] || [[ "$boardrev" = *"b03111" ]] || [[ "$boardrev" = *"b03112" ]] || [[ "$boardrev" = *"b03114" ]] || [[ "$boardrev" = *"c03111" ]] || [[ "$boardrev" = *"c03112" ]] || [[ "$boardrev" = *"c03114" ]] || [[ "$boardrev" = *"d03114" ]] || [[ "$boardrev" = *"d03115" ]] || [[ "$boardrev" = *"c03115" ]] || [[ "$boardrev" = *"b03115" ]]; then
   model_name="Raspberry Pi 4B"
   model_code=6
 
