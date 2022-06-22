@@ -6,12 +6,16 @@
 # Find universal system info
 ram=$(free | awk '/^Mem:/{print $2}')
 
-# If available, grab the board revision from the kernel command line and cross-reference it against known board revisions
 model_name=""
 cmdline=$(cat /proc/cmdline)
 
-search="${cmdline##*bcm2709.boardrev=}"
-boardrev="${search%% *}"
+# Try to grab the boardrev from cpuinfo (Raspberry Pi 32-bit)
+boardrev=$(cat /proc/cpuinfo | grep 'Revision' | awk '{print $3}')
+# If available, grab the board revision from the kernel command line and cross-reference it against known board revisions (64-bit systems)
+if [[ $boardrev == "" ]]; then
+  search="${cmdline##*bcm2709.boardrev=}"
+  boardrev="${search%% *}"
+fi
 
 search="${cmdline##*bcm2709.serial=}"
 serial="${search%% *}"
@@ -32,13 +36,17 @@ elif [[ "$boardrev" = *"9000c1" ]]; then
   model_name="Raspberry Pi Zero W"
   model_code=1
 
+elif [[ "$boardrev" = *"902120" ]]; then
+  model_name="Raspberry Pi Zero 2 W"
+  model_code=1
+
 elif [[ "$boardrev" = *"9020e0" ]]; then
   model_name="Raspberry Pi 3A+"
   model_code=5
 
 elif [[ "$boardrev" = *"900061" ]]; then
   model_name="Raspberry Pi Compute Module"
-  model_code=0
+  model_code=154
 
 elif [[ "$boardrev" = *"a01040" ]] || [[ "$boardrev" = *"a01041" ]] || [[ "$boardrev" = *"a02042" ]] || [[ "$boardrev" = *"a21041" ]] || [[ "$boardrev" = *"a22042" ]]; then
   model_name="Raspberry Pi 2B"
@@ -50,7 +58,7 @@ elif [[ "$boardrev" = *"a02082" ]] || [[ "$boardrev" = *"a22082" ]] || [[ "$boar
 
 elif [[ "$boardrev" = *"a020a0" ]] || [[ "$boardrev" = *"a220a0" ]]; then
   model_name="Raspberry Pi Compute Module 3"
-  model_code=0
+  model_code=152
 
 elif [[ "$boardrev" = *"a020d3" ]]; then
   model_name="Raspberry Pi 3B+"
@@ -58,15 +66,19 @@ elif [[ "$boardrev" = *"a020d3" ]]; then
 
 elif [[ "$boardrev" = *"a02100" ]]; then
   model_name="Raspberry Pi Compute Module 3+"
-  model_code=0
+  model_code=153
 
-elif [[ "$boardrev" = *"a03111" ]] || [[ "$boardrev" = *"b03111" ]] || [[ "$boardrev" = *"b03112" ]] || [[ "$boardrev" = *"b03114" ]] || [[ "$boardrev" = *"c03111" ]] || [[ "$boardrev" = *"c03112" ]] || [[ "$boardrev" = *"c03114" ]] || [[ "$boardrev" = *"d03114" ]] || [[ "$boardrev" = *"d03115" ]] || [[ "$boardrev" = *"c03115" ]] || [[ "$boardrev" = *"b03115" ]]; then
+elif [[ "$boardrev" = *"a03111" ]] || [[ "$boardrev" = *"b03111" ]] || [[ "$boardrev" = *"b03112" ]] || [[ "$boardrev" = *"b03114" ]] || [[ "$boardrev" = *"b03115" ]] || [[ "$boardrev" = *"c03111" ]] || [[ "$boardrev" = *"c03112" ]] || [[ "$boardrev" = *"c03114" ]] || [[ "$boardrev" = *"c03115" ]] || [[ "$boardrev" = *"d03114" ]] || [[ "$boardrev" = *"d03115" ]]; then
   model_name="Raspberry Pi 4B"
   model_code=6
 
 elif [[ "$boardrev" = *"c03130" ]]; then
   model_name="Raspberry Pi 400"
-  model_code=7
+  model_code=150
+
+elif [[ "$boardrev" = *"a03140" ]] || [[ "$boardrev" = *"b03140" ]] || [[ "$boardrev" = *"c03140" ]] || [[ "$boardrev" = *"d03140" ]]; then
+  model_name="Raspberry Pi Compute Module 4"
+  model_code=151
 
 fi
 
@@ -75,6 +87,21 @@ if [[ $model_name == "" ]]; then
   exit 1
 fi
 
-echo $model_name
-echo $ram
-echo $model_code
+# Save data in backward-compatible format
+cat << _EOF_ > /var/log/nems/hw_model
+$model_code
+$model_name
+$DISTRO
+$ROOTFS_DEVICE_PATH
+$HW_UUID
+$HW_ARCH
+$HW_ARCH_DESCRIPTION
+$IMAGE_ADDITIONAL_CREDITS
+$HW_CPUID
+$HW_ONBOARD_WIFI
+$revision
+$HW_RELEASE_DATE
+$HW_PCB_REVISION_CODE
+$ram
+$HW_MANUFACTURER_NAME
+_EOF_
