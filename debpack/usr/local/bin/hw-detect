@@ -1,7 +1,10 @@
 #!/bin/bash
 # NEMS Linux Hardware Detection
 # By Robbie Ferguson // The Bald Nerd
-# (c) Copyright 2021 Category5 TV Network
+# (c) Copyright 2021-2023 Category5 TV Network
+
+## RPi Revision Code Table:
+## https://github.com/raspberrypi/documentation/blob/develop/documentation/asciidoc/computers/raspberry-pi/revision-codes.adoc
 
 # Find universal system info
 ram=$(free | awk '/^Mem:/{print $2}')
@@ -80,28 +83,284 @@ elif [[ "$boardrev" = *"a03140" ]] || [[ "$boardrev" = *"b03140" ]] || [[ "$boar
   model_name="Raspberry Pi Compute Module 4"
   model_code=151
 
+elif [[ -e /boot/saas ]]; then
+  model_name="NEMS SaaS"
+  model_code=23
+
+elif [ -f /etc/.nems_model_code_identifier ]; then
+  model_code=$(sed -n 1p /etc/.nems_model_code_identifier)
+
+  #RoseapplePi
+  if (( $model_code == 110 )); then
+    model_name='RoseapplePi'
+
+  # Khadas VIM3 Basic / Pro
+  elif (( $model_code == 120 )); then
+    model_name='Khadas VIM3 '
+    MEMTOTAL=$(free | awk '/^Mem:/{print $2}')
+    if (( $MEMTOTAL > 3000000 )); then
+      model_name+='Pro'
+      model_code=121
+    else
+      model_name+='Basic'
+    fi
+
+  #ASUS Tinker Board
+  elif (( $model_code == 100 )); then
+    model_name='ASUS Tinker Board'
+
+    # See if this happens to be an S model
+    # Do so by seeing if eMMC drive exists (since it is built in to the S)
+    # Work in progress. Won't work like this because Tinker Board treats SD card as mmcblk. Need to test on an S to figure out a means of distinguishing between them.
+    #                                for f in /dev/mmcblk*; do
+    #                                  [ -e "$f" ] && model_name='ASUS Tinker Board S' && model_code=101
+    #                                  break
+    #                                done
+
+  #A20-OLinuXino-MICRO
+  elif (( $model_code == 90 )); then
+    model_name='A20-OLinuXino-MICRO'
+
+  #Cubieboard 3
+  elif (( $model_code == 80 )); then
+    model_name='Cubieboard 3'
+
+  #Sparky SBC
+  elif (( $model_code == 79 )); then
+    model_name='Sparky SBC'
+
+  # NanoPi NEO Plus2
+  elif (( $model_code == 69 )); then
+    MEMTOTAL=$(free | awk '/^Mem:/{print $2}')
+    if (( $MEMTOTAL > 1000000 )); then
+      model_name='NanoPi NEO Plus2 (1 GB)'
+      model_code=69
+    else
+      model_name='NanoPi NEO Plus2 (512 MB)'
+      model_code=70
+    fi
+
+  #NanoPi M4
+  elif (( $model_code == 67 )); then
+    MEMTOTAL=$(free | awk '/^Mem:/{print $2}')
+    if (( $MEMTOTAL > 3900000 )); then
+      model_name='NanoPi M4 (4 GB)'
+      HW_CPUID=1
+      model_code=68
+    else
+      model_name='NanoPi M4 (2 GB)'
+      HW_CPUID=1
+      model_code=67
+    fi
+
+  #NanoPi M1 Plus
+  elif (( $model_code == 66 )); then
+    model_name='NanoPi M1 Plus'
+    HW_CPUID=1
+
+  #NanoPi NEO 2
+  elif (( $model_code == 65 )); then
+    model_name='NanoPi NEO 2'
+    HW_CPUID=2
+
+  #NanoPi NEO Air
+  elif (( $model_code == 64 )); then
+    model_name='NanoPi NEO Air'
+    HW_CPUID=1
+
+  #NanoPi M1
+  elif (( $model_code == 63 )); then
+    model_name='NanoPi M1/T1'
+    HW_CPUID=1
+
+  #NanoPi M3
+  elif (( $model_code == 62 )); then
+    model_name='NanoPi M3/T3'
+
+  #NanoPi M2
+  elif (( $model_code == 61 )); then
+    model_name='NanoPi M2/T2'
+
+  #NanoPi Neo
+  elif (( $model_code == 60 )); then
+    model_name='NanoPi Neo'
+    HW_CPUID=1
+
+  #BananaPi M2+
+  elif (( $model_code == 50 )); then
+    model_name='BananaPi M2+'
+    HW_CPUID=1
+
+  #BananaPi Pro
+  elif (( $model_code == 51 )); then
+    model_name='BananaPi Pro'
+
+  #Pine A64-LTS
+  elif (( $model_code == 44 )); then
+    model_name='Pine A64-LTS/Sopine'
+
+  #Rock64
+  elif  (( $model_code >= 45 && $model_code <= 47 )); then
+    MEMTOTAL=$(free | awk '/^Mem:/{print $2}')
+    if (( $MEMTOTAL > 4000000 )); then
+      model_name='Rock64 4GB'
+      model_code=47
+    elif (( $MEMTOTAL > 2000000 )); then
+      model_name='Rock64 2GB'
+      model_code=46
+    else
+      model_name='Rock64 1GB'
+      model_code=45
+    fi
+
+  #RockPro64
+  elif  (( $model_code >= 48 && $model_code <= 49 )); then
+    MEMTOTAL=$(free | awk '/^Mem:/{print $2}')
+    if (( $MEMTOTAL > 3900000 )); then
+      model_name='RockPro64 4GB'
+      model_code=49
+    else
+      model_name='RockPro64 2GB'
+      model_code=48
+    fi
+
+  #PineA64
+  elif (( $model_code >= 40 && $model_code <= 42 )); then
+    MEMTOTAL=$(free | awk '/^Mem:/{print $2}')
+    if (( $MEMTOTAL > 2000000 )); then
+      model_name='Pine A64+ 2GB'
+      model_code=42
+    elif (( $MEMTOTAL > 1000000 )); then
+      model_name='Pine A64+ 1GB'
+      model_code=41
+    else
+      model_name='Pine A64 512MB'
+      model_code=40
+    fi
+
+  #OrangePi PC 2
+  elif (( $model_code == 38 )); then
+    model_name='OPi PC2'
+    HW_CPUID=2
+
+  #OrangePi Prime
+  elif (( $model_code == 37 )); then
+    model_name='OPi Prime'
+    HW_CPUID=2
+
+  #OrangePi Win
+  elif (( $model_code == 36 )); then
+    model_name='OPi Win'
+
+  #OrangePi Zero Plus 2 (h3/h5)
+  elif (( $model_code == 35 )); then
+    model_name='OPi Zero 2 Plus'
+    HW_CPUID=1
+
+  #OrangePi Plus
+  elif (( $model_code == 34 )); then
+    model_name='OrangePi Plus'
+    HW_CPUID=1
+
+  #OrangePi Lite
+  elif (( $model_code == 33 )); then
+    model_name='OrangePi Lite'
+    HW_CPUID=1
+
+  #Orange Pi Zero
+  elif (( $model_code == 32 )); then
+    model_name='Orange Pi Zero'
+    #HW_CPUID=1 #H2+
+
+  #OrangePi One
+  elif (( $model_code == 31 )); then
+    model_name='OrangePi One'
+    HW_CPUID=1
+
+  #OrangePi Pc
+  elif (( $model_code == 30 )); then
+    model_name='OrangePi PC'
+    HW_CPUID=1
+
+  #x86_64 native PC
+  elif (( $model_code == 29 )); then
+          model_name='Native PC'
+
+  #Amazon Web Services
+  elif (( $model_code == 22 )); then
+    model_name='Amazon Web Services'
+
+  #Docker Container
+  elif (( $model_code == 21 )); then
+    model_name='Docker'
+
+  #VM
+  elif (( $model_code == 20 )); then
+    model_name='Virtual Machine'
+
+  #oDroid U3
+  elif (( $model_code == 13 )); then
+    model_name='ODROID U3'
+
+  elif (( $model_code == 12 )); then
+    model_name='ODROID-C2'
+
+  #oDroid XU3/4 via /etc/.dietpi_model_code
+  elif (( $model_code == 11 )); then
+    model_name='ODROID XU3/XU4/HC1/HC2'
+
+  # ODROID-C0/C1/C1+
+  elif (( $model_code == 10 )); then
+    model_name='ODROID C0/C1/C1+'
+
+  #ODROID-N2
+  elif (( $model_code == 15 )); then
+    MEMTOTAL=$(free | awk '/^Mem:/{print $2}')
+    if (( $MEMTOTAL > 3800000 )); then
+      model_name='ODROID-N2 (4 GB)'
+      model_code=16
+    else
+      model_name='ODROID-N2 (2 GB)'
+    fi
+
+  # Logic Supply CL100
+  elif (( $model_code >= 98010 && $model_code <= 98019 )); then
+    MEMTOTAL=$(free | awk '/^Mem:/{print $2}')
+    if (( $MEMTOTAL > 7000000 )); then
+      model_name='Logic Supply CL100 (8GB RAM)'
+      model_code=98010
+    elif (( $MEMTOTAL > 3000000 )); then
+      model_name='Logic Supply CL100 (4GB RAM)'
+      model_code=98011
+    else
+      model_name='Logic Supply CL100 (2GB RAM)'
+      model_code=98012
+    fi
+
+  fi
 fi
 
 if [[ $model_name == "" ]]; then
-  echo "This board is unknown"
-  exit 1
+  echo 0
+  exit
 fi
 
 # Save data in backward-compatible format
-cat << _EOF_ > /var/log/nems/hw_model
+# The blank lines are intentional due to deprecation of old data
+cat << _EOF_ > /var/log/nems/model_code
 $model_code
 $model_name
-$DISTRO
-$ROOTFS_DEVICE_PATH
-$HW_UUID
-$HW_ARCH
-$HW_ARCH_DESCRIPTION
-$IMAGE_ADDITIONAL_CREDITS
+
+
+
+
+
+
 $HW_CPUID
-$HW_ONBOARD_WIFI
-$revision
-$HW_RELEASE_DATE
-$HW_PCB_REVISION_CODE
-$ram
-$HW_MANUFACTURER_NAME
+
+
+
+
+
+
 _EOF_
