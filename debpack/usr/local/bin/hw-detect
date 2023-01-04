@@ -87,8 +87,8 @@ elif [[ -e /boot/saas ]]; then
   model_name="NEMS SaaS"
   model_code=23
 
-elif [ -f /etc/.nems_model_code_identifier ]; then
-  model_code=$(sed -n 1p /etc/.nems_model_code_identifier)
+elif [ -f /etc/.nems_hw_model_identifier ]; then
+  model_code=$(sed -n 1p /etc/.nems_hw_model_identifier)
 
   #RoseapplePi
   if (( $model_code == 110 )); then
