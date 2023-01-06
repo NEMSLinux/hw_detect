@@ -347,7 +347,7 @@ fi
 
 # Save data in backward-compatible format
 # The blank lines are intentional due to deprecation of old data
-cat << _EOF_ > /var/log/nems/model_code
+cat << _EOF_ > /var/log/nems/hw_model
 $model_code
 $model_name
 
