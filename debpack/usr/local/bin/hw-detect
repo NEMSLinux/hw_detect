@@ -286,6 +286,10 @@ elif [ -f /etc/.nems_hw_model_identifier ]; then
   elif (( $model_code == 29 )); then
           model_name='Native PC'
 
+  # NEMS Cloud Instance
+  elif (( $model_code == 24 )); then
+    model_name='NEMS Cloud Instance'
+
   #Amazon Web Services
   elif (( $model_code == 22 )); then
     model_name='Amazon Web Services'
