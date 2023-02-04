@@ -311,7 +311,7 @@ elif [ -f /etc/.nems_hw_model_identifier ]; then
 
   #oDroid XU3/4 via /etc/.dietpi_model_code
   elif (( $model_code == 11 )); then
-    model_name='ODROID XU3/XU4/HC1/HC2'
+    model_name='ODROID XU3/XU4/HC1/HC2/MC1'
 
   # ODROID-C0/C1/C1+
   elif (( $model_code == 10 )); then
