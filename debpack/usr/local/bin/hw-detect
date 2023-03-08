@@ -327,6 +327,20 @@ elif [ -f /etc/.nems_hw_model_identifier ]; then
       model_name='ODROID-N2 (2 GB)'
     fi
 
+  # Indiedroid Nova
+  elif (( $model_code >= 200 && $model_code <= 202 )); then
+    MEMTOTAL=$(free | awk '/^Mem:/{print $2}')
+    if (( $MEMTOTAL > 14000000 )); then
+      model_name='Indiedroid Nova (16GB RAM)'
+      model_code=202
+    elif (( $MEMTOTAL > 7000000 )); then
+      model_name='Indiedroid Nova (8GB RAM)'
+      model_code=201
+    else
+      model_name='Indiedroid Nova (4GB RAM)'
+      model_code=200
+    fi
+
   # Logic Supply CL100
   elif (( $model_code >= 98010 && $model_code <= 98019 )); then
     MEMTOTAL=$(free | awk '/^Mem:/{print $2}')
