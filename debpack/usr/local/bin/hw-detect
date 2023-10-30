@@ -83,6 +83,10 @@ elif [[ "$boardrev" = *"a03140" ]] || [[ "$boardrev" = *"b03140" ]] || [[ "$boar
   model_name="Raspberry Pi Compute Module 4"
   model_code=151
 
+elif [[ "$boardrev" = *"c04170" ]] || [[ "$boardrev" = *"d04170" ]]; then
+  model_name="Raspberry Pi 5"
+  model_code=155
+
 elif [[ -e /boot/saas ]]; then
   model_name="NEMS SaaS"
   model_code=23
