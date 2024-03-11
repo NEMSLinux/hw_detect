@@ -367,6 +367,9 @@ if [[ $model_name == "" ]]; then
   exit
 fi
 
+# Save the model code
+echo $model_code > /etc/.nems_hw_model_identifier
+
 # Save data in backward-compatible format
 # The blank lines are intentional due to deprecation of old data
 cat << _EOF_ > /var/log/nems/hw_model
