@@ -85,7 +85,12 @@ elif [[ "$boardrev" = *"a03140" ]] || [[ "$boardrev" = *"b03140" ]] || [[ "$boar
 
 elif [[ "$boardrev" = *"c04170" ]] || [[ "$boardrev" = *"d04170" ]]; then
   model_name="Raspberry Pi 5"
-  model_code=155
+  MEMTOTAL=$(free | awk '/^Mem:/{print $2}')
+  if (( $MEMTOTAL > 5900000 )); then
+    model_code=156 # 8 GB Model
+  else
+    model_code=155 # 4 GB Model
+  fi
 
 elif [[ -e /boot/saas ]]; then
   model_name="NEMS SaaS"
