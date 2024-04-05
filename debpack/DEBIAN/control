@@ -4,6 +4,6 @@ Priority: required
 Section: main
 Maintainer: NEMS Linux <nems@category5.tv>
 Architecture: all
-Version: 1.6.13
+Version: 1.6.14
 Provides: hw-detect
 Description: Hardware detection for NEMS Linux

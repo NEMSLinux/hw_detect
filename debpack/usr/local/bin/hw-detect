@@ -309,7 +309,11 @@ elif [ -f /etc/.nems_hw_model_identifier ]; then
 
   #VM
   elif (( $model_code == 20 )); then
-    model_name='Virtual Machine'
+    model_name='Virtual Appliance'
+    arch=`dpkg --print-architecture`
+    if [[ "${arch,,}" == "arm64" || "${arch,,}" == "aarch64" ]]; then
+      model_code=26 # Set to ARM64 Virtual Appliance
+    fi
 
   #oDroid U3
   elif (( $model_code == 13 )); then
